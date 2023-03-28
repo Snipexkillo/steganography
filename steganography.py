@@ -87,7 +87,7 @@ if choice == 'e': #encoding a secret in an image
 
         elif choice == 'n': #gets filename and saves image with it
             print('what is the filename (include .png/jpg)')
-            name = input().strip().remove("\"", "")
+            name = input().strip().replace("\"", "")
             if os.name == "nt":
                 downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
             else:  # PORT: For *Nix systems
