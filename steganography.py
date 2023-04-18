@@ -71,7 +71,6 @@ if choice == 'e': #encoding a secret in an image
             secr += '{0:08b}'.format(ord(i))
 
         secr += "00000000000001"
-        print(secr)
         while True: #asks if the image will come from a url or if it is already downloaded
             print("are you using a url link(u) or a downloaded image with a path on your computer(d)?")
             choice = input()
@@ -93,7 +92,7 @@ if choice == 'e': #encoding a secret in an image
     #algo is really simple, you take the least significant bit of each RGB value and make it match a bit of the secret
     #ex. if the RGB is (22, 34, 44) or (00010110, 00100010, 00101100) and the secret is 101
     #we change the RGB to (00010111, 00100010, 00101101) or (23,33,45) which looks the same to the original in our eyes but is different
-    li = []
+    li = list(data[0])
     for x in range(len(secr)//2): #iterate through the secret
         if x % 3 == 0:
             li = list(data[x // 3])
@@ -110,16 +109,15 @@ if choice == 'e': #encoding a secret in an image
         nli = [int(li[i], 2) for i in range(3)]
         if mod:
             nli.append(li[3])
-        data[x // 3] = tuple(nli)  # turn the edited rgb list into a tuple and put back in data list
+        data[((len(secr)//2)+2)//3] = tuple(nli)  # turn the edited rgb list into a tuple and put back in data list
     le = len(secr)
 
     #create the new image
     newimg = Image.new(img.mode, siz)
     newimg.putdata(data)
     newimg.show()
-    for a in range(10):
-        print(data[a])
-        print(list(newimg.getdata())[a])
+    zdat = list(img.getdata())
+    ndat = list(newimg.getdata())
 
     while True:  #asks if image will be saved
         print("Would you like this image saved? (y or n)")
@@ -171,8 +169,6 @@ if choice == 'd':
     siz = img.size  # gets image dimensions
     mod = img.mode  # get image type (ex. RGB, RGBA)
     data = list(img.getdata())  # gets all of the RGB(A) values and puts it in a list
-    for a in range(10):
-        print(data[a])
     secr = '{0:02b}'.format(data[0][0] % 4)
     print(secr)
     if secr[0] == '0':
