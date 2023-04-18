@@ -237,13 +237,23 @@ if choice == 'd':
             sec += chr(int(secr[x*8:x*8+8], 2))
         print(sec) #prints decoded secret
     else:
-        dat = []
-        for x in range(0, len(secr)//8, 3):
-            dat.append(tuple([secr[x*24:x*24 + 8], secr[x*24 + 8:x*24 + 16], secr[x*24 + 16:x*24 + 24]]))
-
+        mode = ""
             # create the new image
-        newimg = Image.new(img.mode, siz)
-        newimg.putdata(data)
+        if rgb:
+            mode = "RGB"
+            dat = []
+            for x in range(0, len(secr) // 24, 3):
+                dat.append(tuple([int(secr[x * 24:x * 24 + 8], 2), int(secr[x * 24 + 8:x * 24 + 16], 2),
+                                  int(secr[x * 24 + 16:x * 24 + 24], 2)]))
+
+        else:
+            mode = "RGBA"
+            dat = []
+            for x in range(0, len(secr) // 32, 4):
+                dat.append(tuple([int(secr[x * 32:x * 32 + 8], 2), int(secr[x * 32 + 8:x * 32 + 16], 2),
+                                  int(secr[x * 32 + 16:x * 32 + 24], 2), int(secr[x * 32 + 24:x * 32 + 32], 2)]))
+        newimg = Image.new(mode, tuple([width, height]))
+        newimg.putdata(dat)
         newimg.show()
         zdat = list(img.getdata())
         ndat = list(newimg.getdata())
