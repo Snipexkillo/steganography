@@ -214,7 +214,7 @@ if choice == 'd':
 
 
     print(secr)
-    secr = secr[0:len(secr)-14] #removes unnecessary bits from the condition
+    secr = secr[0:len(secr)-15] #removes unnecessary bits from the condition
     sec = ""
     for x in range((len(secr)+7)//8): #turns binary into ascii/readable text
         sec += chr(int(secr[x*8:x*8+8], 2))
