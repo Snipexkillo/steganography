@@ -10,13 +10,13 @@ while True: #asks if it will decode or encode
         break
 
 if choice == 'e': #encoding a secret in an image
-    while True:  # asks if it will decode or encode
+    while True:  # asks if it will encode an image or text
         print("what data type are you trying to hide? image(i) or text(t)")
         choice = input()
         if choice == 'i' or choice == 't':
             break
     if choice == 'i':
-        while True:  # asks if the image will come from a url or if it is already downloaded
+        while True:  #asks if the image that will be encoded will come from a url or if it is already downloaded
             print("are you using a url link(u) or a downloaded image with a path on your computer(d) for the image you are trying to hide?")
             choice = input()
             if choice == 'u' or choice == 'd':
@@ -32,7 +32,7 @@ if choice == 'e': #encoding a secret in an image
             secrimg = Image.open(path)
 
 
-        while True:  # asks if the image will come from a url or if it is already downloaded
+        while True:  # asks if the image that will hide the other image will come from a url or if it is already downloaded
             print("are you using a url link(u) or a downloaded image with a path on your computer(d) for the image that will hide the other image?")
             choice = input()
             if choice == 'u' or choice == 'd':
@@ -45,26 +45,38 @@ if choice == 'e': #encoding a secret in an image
             print("what is the image path?")
             path = Path(input().strip().repalace("\"", ""))
             img = Image.open(path)
+            
+        #checks if the image to be encoded can even fit in the other image, and if not will resize the image to be encoding to fit
         if (secrimg.height * secrimg.width+ 2*len("00000000000001") + len('{0:08b}'.format(secrimg.width)) + len('{0:08b}'.format(secrimg.height))) >= (img.height * img.width)//4 :
             secrimg = secrimg.resize((img.size[0]//3, img.size[1]//3))
 
-        #converts all of the RGB(A) into binary
+        #converts all of the image to be encoded's RGB(A) data into binary
         secrdata = list(secrimg.getdata())
+        
+        #adds 2 bits, the first one says that it is an image, the second one says if it is RGB or RGBA
         secr = "1"
         if secrimg.mode == "RGBA":
             secr += '1'
         else:
             secr += '0'
+            
+        #adds bits that show the image's width and height
         secr += '{0:08b}'.format(secrimg.width)
         secr += "00000000000001"
         secr += '{0:08b}'.format(secrimg.height)
         secr += '00000000000001'
+        
+        #adds the bits with the actual RGB(A) data 
         for x in secrdata:
             for a in x:
                 secr += '{0:08b}'.format(a)
+                
+                
     if choice == 't':
-        print("what info are you trying to hide?:")
+        print("what info are you trying to hide?:") #gets the text that will be encoded
         secret = input()
+        
+        
         secr = "00"
         for i in secret: #turns secret into binary
             secr += '{0:08b}'.format(ord(i))
