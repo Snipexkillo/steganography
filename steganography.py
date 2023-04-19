@@ -235,7 +235,7 @@ if choice == 'd':
         sec = ""
         for x in range(len(secr)//8): #turns binary into ascii/readable text
             sec += chr(int(secr[x*8:x*8+8], 2))
-        print(sec) #prints decoded secret
+        print(sec)
     else:
         mode = ""
             # create the new image
