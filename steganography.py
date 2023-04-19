@@ -62,7 +62,8 @@ if choice == 'e': #encoding a secret in an image
         for x in secrdata:
             for a in x:
                 secr += '{0:08b}'.format(a)
-
+        print(secrimg.width)
+        print(secrimg.height)
     if choice == 't':
         print("what info are you trying to hide?:")
         secret = input()
@@ -89,6 +90,7 @@ if choice == 'e': #encoding a secret in an image
     siz = img.size #gets image dimensions
     mod = img.mode == "RGBA" #get image type (ex. RGB, RGBA)
     data = list(img.getdata()) #gets all of the RGB(A) values and puts it in a list
+    print(data)
     #algo is really simple, you take the least significant bit of each RGB value and make it match a bit of the secret
     #ex. if the RGB is (22, 34, 44) or (00010110, 00100010, 00101100) and the secret is 101
     #we change the RGB to (00010111, 00100010, 00101101) or (23,33,45) which looks the same to the original in our eyes but is different
@@ -118,7 +120,6 @@ if choice == 'e': #encoding a secret in an image
     newimg.show()
     zdat = list(img.getdata())
     ndat = list(newimg.getdata())
-
     while True:  #asks if image will be saved
         print("Would you like this image saved? (y or n)")
         choice = input()
@@ -187,6 +188,10 @@ if choice == 'd':
                     condition = 0
     else:
         rgb = secr[1] == 0
+        if(rgb):
+            alpha = 3
+        else:
+            alpha = 4
         width = ""
         height = ""
         counter = 1
@@ -215,41 +220,34 @@ if choice == 'd':
         width = int(width[0:len(width)-14], 2)
         height = int(height[0:len(height) - 14], 2)
         secr = ''
-        condition = 0
-        for x in range(counter, counter + width*height):  # gets the last 2 bits of data from each RGB value
+        for x in range(counter, counter + (width*height*alpha*8)//2):  # gets the last 2 bits of data from each RGB value
             secr += '{0:02b}'.format(data[x // 3][x % 3] % 4)
 
-            if data[x // 3][x % 3] % 4 == 0:  # checks for the condition that ends transmission (0000000000001)
-                condition += 1
-            else:
-                if condition >= 6:
-                    break
-                else:
-                    condition = 0
-
-            print(width)
-            print(height)
-            print(len(secr))
+        print(width)
+        print(height)
+        print(len(secr))
+        print(width*height*8*alpha)
     if check:
         secr = secr[0:len(secr)-14] #removes unnecessary bits from the condition
         sec = ""
         for x in range(len(secr)//8): #turns binary into ascii/readable text
             sec += chr(int(secr[x*8:x*8+8], 2))
         print(sec)
+        print(width*height)
     else:
         mode = ""
             # create the new image
         if rgb:
             mode = "RGB"
             dat = []
-            for x in range(0, len(secr) // 24, 3):
+            for x in range(0, len(secr) // 24):
                 dat.append(tuple([int(secr[x * 24:x * 24 + 8], 2), int(secr[x * 24 + 8:x * 24 + 16], 2),
                                   int(secr[x * 24 + 16:x * 24 + 24], 2)]))
 
         else:
             mode = "RGBA"
             dat = []
-            for x in range(0, len(secr) // 32, 4):
+            for x in range(0, len(secr) // 32):
                 dat.append(tuple([int(secr[x * 32:x * 32 + 8], 2), int(secr[x * 32 + 8:x * 32 + 16], 2),
                                   int(secr[x * 32 + 16:x * 32 + 24], 2), int(secr[x * 32 + 24:x * 32 + 32], 2)]))
         newimg = Image.new(mode, tuple([width, height]))
@@ -257,7 +255,9 @@ if choice == 'd':
         newimg.show()
         zdat = list(img.getdata())
         ndat = list(newimg.getdata())
-
+        print(newimg.width)
+        print(newimg.height)
+        print(newimg.width * newimg.height)
         while True:  # asks if image will be saved
             print("Would you like this image saved? (y or n)")
             choice = input()
@@ -266,8 +266,7 @@ if choice == 'd':
 
         if choice == 'y':  # image will be saved
             while True:  # asks where it will be saved?
-                print(
-                    "Would you like it saved towards a specific path (p) or just downloaded with a specific name (n)?")
+                print("Would you like it saved towards a specific path (p) or just downloaded with a specific name (n)?")
                 choice = input()
                 if choice == 'p' or choice == 'n':
                     break
