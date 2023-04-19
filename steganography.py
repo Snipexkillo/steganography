@@ -227,9 +227,9 @@ if choice == 'd':
                 else:
                     condition = 0
 
-    print(width)
-    print(height)
-    print(len(secr))
+            print(width)
+            print(height)
+            print(len(secr))
     if check:
         secr = secr[0:len(secr)-14] #removes unnecessary bits from the condition
         sec = ""
