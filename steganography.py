@@ -50,15 +50,11 @@ if choice == 'e': #encoding a secret in an image
 
         #converts all of the RGB(A) into binary
         secrdata = list(secrimg.getdata())
-        with open('output3.txt', 'a') as f:
-            f.write(str(secrdata))
-        print(secrimg.mode)
         secr = "1"
         if secrimg.mode == "RGBA":
             secr += '1'
         else:
             secr += '0'
-        print(secr)
         secr += '{0:08b}'.format(secrimg.width)
         secr += "00000000000001"
         secr += '{0:08b}'.format(secrimg.height)
@@ -66,8 +62,6 @@ if choice == 'e': #encoding a secret in an image
         for x in secrdata:
             for a in x:
                 secr += '{0:08b}'.format(a)
-        print(secrimg.width)
-        print(secrimg.height)
     if choice == 't':
         print("what info are you trying to hide?:")
         secret = input()
@@ -122,8 +116,6 @@ if choice == 'e': #encoding a secret in an image
     newimg = Image.new(img.mode, siz)
     newimg.putdata(data)
     newimg.show()
-    zdat = list(img.getdata())
-    ndat = list(newimg.getdata())
     while True:  #asks if image will be saved
         print("Would you like this image saved? (y or n)")
         choice = input()
@@ -176,7 +168,6 @@ if choice == 'd':
     data = list(img.getdata())  # gets all of the RGB(A) values and puts it in a list
     secr = '{0:02b}'.format(data[0][0] % 4)
     check = secr[0] == "0"
-    print(secr)
     if check:
         secr = ''
         condition = 0
@@ -193,7 +184,6 @@ if choice == 'd':
     else:
         rgb = secr[1] == "0"
         if(rgb):
-            print("MOEW")
             alpha = 3
         else:
             alpha = 4
@@ -228,17 +218,12 @@ if choice == 'd':
         for x in range(counter, counter + (width*height*alpha*8)//2):  # gets the last 2 bits of data from each RGB value
             secr += '{0:02b}'.format(data[x // 3][x % 3] % 4)
 
-        print(width)
-        print(height)
-        print(len(secr))
-        print(width*height*8*alpha)
     if check:
         secr = secr[0:len(secr)-14] #removes unnecessary bits from the condition
         sec = ""
         for x in range(len(secr)//8): #turns binary into ascii/readable text
             sec += chr(int(secr[x*8:x*8+8], 2))
-        print(sec)
-        print(width*height)
+
     else:
         mode = ""
             # create the new image
@@ -258,15 +243,6 @@ if choice == 'd':
         newimg = Image.new(mode, tuple([width, height]))
         newimg.putdata(dat)
         newimg.show()
-
-        with open('output2.txt', 'a') as f:
-            f.write(str(dat))
-
-        zdat = list(img.getdata())
-        ndat = list(newimg.getdata())
-        print(newimg.width)
-        print(newimg.height)
-        print(newimg.width * newimg.height)
         while True:  # asks if image will be saved
             print("Would you like this image saved? (y or n)")
             choice = input()
@@ -294,4 +270,3 @@ if choice == 'd':
                     downloadfolder = f"{os.getenv('HOME')}/Downloads"
                 print(downloadfolder + "\\" + name)
                 newimg.save(downloadfolder + "\\" + name)
-        # newimg.save("C:\\Users\\aksha\Downloads\\newimg.png")
