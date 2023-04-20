@@ -15,7 +15,7 @@ if choice == 'e': #encoding a secret in an image
         choice = input()
         if choice == 'i' or choice == 't':
             break
-    if choice == 'i':
+    if choice == 'i': #an image is going to be encoded
         while True:  #asks if the image that will be encoded will come from a url or if it is already downloaded
             print("are you using a url link(u) or a downloaded image with a path on your computer(d) for the image you are trying to hide?")
             choice = input()
@@ -72,16 +72,18 @@ if choice == 'e': #encoding a secret in an image
                 secr += '{0:08b}'.format(a)
                 
                 
-    if choice == 't':
+    if choice == 't': #text is going to be encoded
         print("what info are you trying to hide?:") #gets the text that will be encoded
         secret = input()
-        
-        
+
+        #adds two zeroes to specify that text was encoded
         secr = "00"
-        for i in secret: #turns secret into binary
+        for i in secret: #turns text into binary
             secr += '{0:08b}'.format(ord(i))
 
+        #shows when the text ends
         secr += "00000000000001"
+
         while True: #asks if the image will come from a url or if it is already downloaded
             print("are you using a url link(u) or a downloaded image with a path on your computer(d)?")
             choice = input()
@@ -97,24 +99,26 @@ if choice == 'e': #encoding a secret in an image
             path = Path(input().strip().replace("\"", ""))
             img = Image.open(path)
 
+
     siz = img.size #gets image dimensions
     mod = img.mode == "RGBA" #get image type (ex. RGB, RGBA)
     data = list(img.getdata()) #gets all of the RGB(A) values and puts it in a list
 
-    #algo is really simple, you take the least significant bit of each RGB value and make it match a bit of the secret
-    #ex. if the RGB is (22, 34, 44) or (00010110, 00100010, 00101100) and the secret is 101
-    #we change the RGB to (00010111, 00100010, 00101101) or (23,33,45) which looks the same to the original in our eyes but is different
+    #algo is really simple, you take the 2 least significant bits of each RGB value and make it match a bit of the secret
+    #ex. if the RGB is (22, 34, 44) or (00010110, 00100010, 00101100) and the secret is 101101
+    #we change the RGB to (00010110, 00100011, 00101101) or (22,35,45) which looks the same to the original in our eyes but is different
     li = list(data[0])
-    for x in range(len(secr)//2): #iterate through the secret
-        if x % 3 == 0:
+    for x in range(len(secr)//2): #iterate through the secret data
+        if x % 3 == 0: #turn the RGB tuple into a list
             li = list(data[x // 3])
-        li[x % 3] = format(li[x % 3], "08b")[0:6] + (secr[x*2:x*2+2])
+        li[x % 3] = format(li[x % 3], "08b")[0:6] + (secr[x*2:x*2+2]) #convert RGB to binary and change the last two bits
         if x % 3 == 2:
-            nli = [int(li[i], 2) for i in range(3)]
+            nli = [int(li[i], 2) for i in range(3)] #convert the RGB values from binary to decimal
             if mod :
                 nli.append(li[3])
             data[x // 3] = tuple(nli) #turn the edited rgb list into a tuple and put back in data list
-    if (len(secr)//2)%3 != 2:
+
+    if (len(secr)//2)%3 != 2: #turn the final edited rgb list into a tuple and put back in data list when there is no more secret data
         for x in range(3):
             if isinstance(li[x], int):
                 li[x] = '{0:08b}'.format(li[x])
@@ -122,7 +126,6 @@ if choice == 'e': #encoding a secret in an image
         if mod:
             nli.append(li[3])
         data[((len(secr)//2)+2)//3] = tuple(nli)  # turn the edited rgb list into a tuple and put back in data list
-    le = len(secr)
 
     #create the new image
     newimg = Image.new(img.mode, siz)
@@ -145,18 +148,17 @@ if choice == 'e': #encoding a secret in an image
             print("what is your path")
             path = Path(input().strip().replace("\"", ""))
             newimg.save(path)
+            print("Saved to: " + path)
 
         elif choice == 'n': #gets filename and saves image with it
-            print('what is the filename (include .png/jpg)')
+            print('what is the filename (this will add .png')
             name = input().strip().replace("\"", "")
             if os.name == "nt":
                 downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
             else:  # PORT: For *Nix systems
                 downloadfolder = f"{os.getenv('HOME')}/Downloads"
-            print(downloadfolder + "\\" + name)
-            newimg.save(downloadfolder + "\\" + name)
-    #newimg.save("C:\\Users\\aksha\Downloads\\newimg.png")
-
+            print("Saved to: " + downloadfolder + "\\" + name + ".png")
+            newimg.save(downloadfolder + "\\" + name + ".png")
 
 
 if choice == 'd':
