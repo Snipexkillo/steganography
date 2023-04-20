@@ -151,7 +151,7 @@ if choice == 'e': #encoding a secret in an image
             print("Saved to: " + path)
 
         elif choice == 'n': #gets filename and saves image with it
-            print('what is the filename (this will add .png')
+            print("what is the filename (don't add .png")
             name = input().strip().replace("\"", "")
             if os.name == "nt":
                 downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
@@ -180,9 +180,12 @@ if choice == 'd':
     siz = img.size  # gets image dimensions
     mod = img.mode  # get image type (ex. RGB, RGBA)
     data = list(img.getdata())  # gets all of the RGB(A) values and puts it in a list
+
+    #check if an image or text will be decoded
     secr = '{0:02b}'.format(data[0][0] % 4)
     check = secr[0] == "0"
-    if check:
+
+    if check: #text will be decoded
         secr = ''
         condition = 0
         for x in range(1, len(data)*3): #gets the last 2 bits of data from each RGB value
@@ -195,17 +198,26 @@ if choice == 'd':
                     break
                 else:
                     condition = 0
-    else:
-        rgb = secr[1] == "0"
+
+        secr = secr[0:len(secr)-14] #removes unnecessary bits (the condition)
+        sec = ""
+        for x in range(len(secr)//8): #turns binary into ascii/readable text
+            sec += chr(int(secr[x*8:x*8+8], 2))
+        print(sec)
+
+    else: #an image will be decoded
+        rgb = secr[1] == "0" #check if encoded image is RGB or RGBA
         if(rgb):
             alpha = 3
         else:
             alpha = 4
+
+
         width = ""
         height = ""
         counter = 1
         condition = 0
-        for x in range(1, len(data)*3, 1): #gets the last bit of data from each RGB value
+        for x in range(1, len(data)*3, 1): #obtains the width of the encoded image
             counter+=1
             width += '{0:02b}'.format(data[x // 3][x % 3] % 4)
             if data[x // 3][x % 3] % 4 == 0: #checks for the condition that ends transmission (0000000000001)
@@ -216,7 +228,8 @@ if choice == 'd':
                 else:
                     condition = 0
         condition = 0
-        for x in range(counter, len(data)*3, 1): #gets the last bit of data from each RGB value
+
+        for x in range(counter, len(data)*3, 1): #obtains the height of the encoded image
             counter+=1
             height += '{0:02b}'.format(data[x // 3][x % 3] % 4)
             if data[x // 3][x % 3] % 4 == 0: #checks for the condition that ends transmission (0000000000001)
@@ -226,37 +239,37 @@ if choice == 'd':
                     break
                 else:
                     condition = 0
+
+        #convert height and width to decimal
         width = int(width[0:len(width)-14], 2)
         height = int(height[0:len(height) - 14], 2)
+
+        #obtains the rest of the binary data used in the image
         secr = ''
         for x in range(counter, counter + (width*height*alpha*8)//2):  # gets the last 2 bits of data from each RGB value
             secr += '{0:02b}'.format(data[x // 3][x % 3] % 4)
 
-    if check:
-        secr = secr[0:len(secr)-14] #removes unnecessary bits from the condition
-        sec = ""
-        for x in range(len(secr)//8): #turns binary into ascii/readable text
-            sec += chr(int(secr[x*8:x*8+8], 2))
-        print(sec)
-    else:
         mode = ""
             # create the new image
         if rgb:
             mode = "RGB"
             dat = []
-            for x in range(0, len(secr) // 24):
+            for x in range(0, len(secr) // 24): #formats the obtained data into a list with RGB tuples
                 dat.append(tuple([int(secr[x * 24:x * 24 + 8], 2), int(secr[x * 24 + 8:x * 24 + 16], 2),
                                   int(secr[x * 24 + 16:x * 24 + 24], 2)]))
 
         else:
             mode = "RGBA"
             dat = []
-            for x in range(0, len(secr) // 32):
+            for x in range(0, len(secr) // 32): #formats the obtained data into a list with RGBA tuples
                 dat.append(tuple([int(secr[x * 32:x * 32 + 8], 2), int(secr[x * 32 + 8:x * 32 + 16], 2),
                                   int(secr[x * 32 + 16:x * 32 + 24], 2), int(secr[x * 32 + 24:x * 32 + 32], 2)]))
+
+        #turns data into an image with proper width, height, and mode
         newimg = Image.new(mode, tuple([width, height]))
         newimg.putdata(dat)
         newimg.show()
+
         while True:  # asks if image will be saved
             print("Would you like this image saved? (y or n)")
             choice = input()
@@ -276,11 +289,12 @@ if choice == 'd':
                 newimg.save(path)
 
             elif choice == 'n':  # gets filename and saves image with it
-                print('what is the filename (include .png/jpg)')
+                print("what is the filename (don't add .png")
                 name = input().strip().replace("\"", "")
                 if os.name == "nt":
                     downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
                 else:  # PORT: For *Nix systems
                     downloadfolder = f"{os.getenv('HOME')}/Downloads"
-                print(downloadfolder + "\\" + name)
-                newimg.save(downloadfolder + "\\" + name)
+                print("Saved to: " + downloadfolder + "\\" + name + ".png")
+                newimg.save(downloadfolder + "\\" + name + ".png")
+
