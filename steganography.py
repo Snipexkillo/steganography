@@ -298,4 +298,3 @@ if choice == 'd':
                     downloadfolder = f"{os.getenv('HOME')}/Downloads"
                 print("Saved to: " + downloadfolder + "\\" + name + ".png")
                 newimg.save(downloadfolder + "\\" + name + ".png")
-
