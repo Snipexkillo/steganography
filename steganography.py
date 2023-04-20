@@ -287,6 +287,7 @@ if choice == 'd':
                 print("what is your path")
                 path = Path(input().strip().replace("\"", ""))
                 newimg.save(path)
+                print("Saved to: " + str(path))
 
             elif choice == 'n':  # gets filename and saves image with it
                 print("what is the filename (don't add .png)")
