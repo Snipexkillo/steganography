@@ -28,7 +28,7 @@ if choice == 'e': #encoding a secret in an image
             secrimg = Image.open(urlopen(path))
         else:  # obtains image from computer
             print("what is the image path?")
-            path = Path(input().striap().replace("\"", ""))
+            path = Path(input().strip().replace("\"", ""))
             secrimg = Image.open(path)
 
 
@@ -43,9 +43,9 @@ if choice == 'e': #encoding a secret in an image
             img = Image.open(urlopen(path))
         else:  # obtains image from computer
             print("what is the image path?")
-            path = Path(input().strip().repalace("\"", ""))
+            path = Path(input().strip().replace("\"", ""))
             img = Image.open(path)
-            
+
         #checks if the image to be encoded can even fit in the other image, and if not will resize the image to be encoding to fit
         if (secrimg.height * secrimg.width+ 2*len("00000000000001") + len('{0:08b}'.format(secrimg.width)) + len('{0:08b}'.format(secrimg.height))) >= (img.height * img.width)//4 :
             secrimg = secrimg.resize((img.size[0]//3, img.size[1]//3))
@@ -148,10 +148,10 @@ if choice == 'e': #encoding a secret in an image
             print("what is your path")
             path = Path(input().strip().replace("\"", ""))
             newimg.save(path)
-            print("Saved to: " + path)
+            print("Saved to: " + str(path))
 
         elif choice == 'n': #gets filename and saves image with it
-            print("what is the filename (don't add .png")
+            print("what is the filename (don't add .png)")
             name = input().strip().replace("\"", "")
             if os.name == "nt":
                 downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
@@ -289,7 +289,7 @@ if choice == 'd':
                 newimg.save(path)
 
             elif choice == 'n':  # gets filename and saves image with it
-                print("what is the filename (don't add .png")
+                print("what is the filename (don't add .png)")
                 name = input().strip().replace("\"", "")
                 if os.name == "nt":
                     downloadfolder = f"{os.getenv('USERPROFILE')}\\Downloads"
